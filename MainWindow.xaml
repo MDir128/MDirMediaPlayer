@@ -1,0 +1,48 @@
+﻿<Window x:Class="MDirMediaPlayer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MDirMediaPlayer"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Menu VerticalAlignment="Top" Grid.Row="0">
+            <MenuItem Header="Домой" Click="GoHome"/>
+            <MenuItem Header="Файл" x:Name="MenuFile">
+                <MenuItem Header="Добавить сериал в список" Click="AddSeries_Click"/>
+                <MenuItem Header="смотреть сериал" Click="OpenVideo_Click_Main"/>
+                <MenuItem Header="показать не найденные сериалы" Click="ShowNotFound" x:Name="FoundNotfoundButton"/>
+            </MenuItem>
+        </Menu>
+        <DataGrid Name="Serials" AutoGenerateColumns="False" ScrollViewer.VerticalScrollBarVisibility="Auto"
+                  ScrollViewer.CanContentScroll="True" Grid.Row="1" CanUserAddRows="False">
+            <DataGrid.Columns>
+            <DataGridTemplateColumn Header="активная кнопка">
+                <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                            <Button Click="Active">
+                                <Image Source="images\pngtree-vector-plus-icon-png-image_925439.jpg"/>
+                            </Button>
+                        </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+            <DataGridTextColumn Header="Название" Binding="{Binding name}"/>
+            <DataGridTextColumn Header="Изображение" Binding="{Binding im}" />
+                <DataGridTemplateColumn Header="Удалить из списка" x:Name="X_Button">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Click="DeleteSer" Content="X">
+                                
+                            </Button>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Window>
