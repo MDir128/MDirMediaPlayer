@@ -67,15 +67,18 @@ namespace MDirMediaPlayer
             player.API.FileLoaded += (Lsender, Largs) => {
                 duration = player.API.GetPropertyDouble("duration");
                 dodisturb = true;
-                if (param[3] == "mkv")
+                if (param[5] == "-1")
                 {
-                    changeAudio(param[4]);
-                    changeSub(param[5]);
+                    changeSub("-1");
                 }
                 UpdateTracks();
             };
             Console.WriteLine(player.API.GetPropertyString("track-list"));
-            
+            if (param[3] == "mkv")
+            {
+                changeAudio(param[4]);
+                changeSub(param[5]);
+            }
             player.API.EndFile += (Esender, Eargs) =>
             {
                 if (Convert.ToInt32(param[1]) < goturi.Length) { changevid(1); }
