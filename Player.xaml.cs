@@ -84,29 +84,32 @@ namespace MDirMediaPlayer
         }
         private void JUSTCLOSE()
         {
-            string[] namepath = goturi[0].Split(Convert.ToChar(@"\"));
-            string name = namepath[0];
-            for (int i = 1; i < namepath.Length - 1; i++)
+            if (param[0] == "S")
             {
-                name += @"\" + namepath[i];
-            }
-            string newparams = "";
-            int j = 0;
-            foreach (string pt in param)
-            {
-                if (j == 0)
+                string[] namepath = goturi[0].Split(Convert.ToChar(@"\"));
+                string name = namepath[0];
+                for (int i = 1; i < namepath.Length - 1; i++)
                 {
-                    newparams = newparams + pt;
+                    name += @"\" + namepath[i];
                 }
+                string newparams = "";
+                int j = 0;
+                foreach (string pt in param)
+                {
+                    if (j == 0)
+                    {
+                        newparams = newparams + pt;
+                    }
 
-                else
-                {
-                    newparams = newparams + "&" + pt;
+                    else
+                    {
+                        newparams = newparams + "&" + pt;
+                    }
+                    j++;
                 }
-                j++;
+                bool check = Fileworks.ChangeData("sevedser.txt", name, newparams);
+                Console.WriteLine($"Сохраняем: {newparams}");
             }
-            bool check = Fileworks.ChangeData("sevedser.txt", name, newparams);
-            Console.WriteLine($"Сохраняем: {newparams}");
         }
         private void WindowOnClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
@@ -195,7 +198,7 @@ namespace MDirMediaPlayer
                 };
                 SubMenu.Items.Add(menuItem);
             }
-            if (gotextsub[Convert.ToInt16(param[1]) - 1]!=null && param[5] != "-1") {
+            if (Fileworks.IsArrValid(gotextsub, Convert.ToInt32(param[1])-1) && param[5] != "-1") {
                 var menuItem = new MenuItem
                 {
                     Header = $"Внешние субтитры"

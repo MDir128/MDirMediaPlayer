@@ -14,6 +14,7 @@
         <Menu VerticalAlignment="Top" Grid.Row="0">
             <MenuItem Header="Домой" Click="GoHome"/>
             <MenuItem Header="Файл" x:Name="MenuFile">
+                <MenuItem Header="открыть видео" Click="WatchWideoClick"/>
                 <MenuItem Header="Добавить сериал в список" Click="AddSeries_Click"/>
                 <MenuItem Header="смотреть сериал" Click="OpenVideo_Click_Main"/>
                 <MenuItem Header="показать не найденные сериалы" Click="ShowNotFound" x:Name="FoundNotfoundButton"/>

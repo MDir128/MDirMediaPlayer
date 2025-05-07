@@ -47,6 +47,18 @@ namespace MDirMediaPlayer
             X_Button.Visibility = Visibility.Visible;
             Serials.ItemsSource = ser;
         }
+        public void WatchWideoClick(object Sender, RoutedEventArgs e)
+        {
+            var dialog = new System.Windows.Forms.OpenFileDialog();
+            dialog.ShowDialog();
+            string path = dialog.FileName;
+            if (path != null && path != "")
+            {
+                string[] curi = new string[] { path };
+                string[] cps = new string[] { "M", "1", "?", "0", "0", "0" };
+                StartPlayer(cps, curi);
+            }
+        }
         public void AddSeries_Click(Object Sender, RoutedEventArgs e)
         {
             var dialog = new FolderBrowserDialog();

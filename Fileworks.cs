@@ -44,6 +44,17 @@ namespace MDirMediaPlayer
             }
             return false;
         }
+        public static bool IsArrValid(string[] array) {
+            if (array == null || array.Length == 0) return false;
+            else if (array[0] == null) return false;
+            else return true;
+        }
+        public static bool IsArrValid(string[] array, int corrent)
+        {
+            if (array == null || array.Length == 0) return false;
+            else if (array[corrent] == null) return false;
+            else return true;
+        }
         public static string RemovePrefix(string input, string prefix)
         {
             return input.StartsWith(prefix) ? input.Substring(prefix.Length) : input;
