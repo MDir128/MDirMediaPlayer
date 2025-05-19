@@ -55,7 +55,7 @@ namespace MDirMediaPlayer
             if (path != null && path != "")
             {
                 string[] curi = new string[] { path };
-                string[] cps = new string[] { "M", "1", "?", "0", "0", "0" };
+                string[] cps = new string[] { "M", "1", "?", "0", "0", "n" };
                 StartPlayer(cps, curi);
             }
         }
@@ -66,7 +66,7 @@ namespace MDirMediaPlayer
             string path = dialog.SelectedPath;
             File.AppendAllLines("sevedser.txt", new[] { path });
             Serials.ItemsSource = null;
-            ChangeInfofilesRep(path, "S&1&0&?&1&1");
+            ChangeInfofilesRep(path, "S&1&0&?&1&n");
             Serials.ItemsSource = ser;
         }
         public void DeleteSer(Object Sender, RoutedEventArgs e)

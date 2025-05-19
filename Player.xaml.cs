@@ -140,15 +140,26 @@ namespace MDirMediaPlayer
         }
         public void changeSub(string set)
         {
-            
-            if (set != "-1")
+            if (set=="n")
+            {
+                if (param[5] == "-1")
+                {
+                    try
+                    {
+                        player.API.Command("sub-remove");
+                        param[5] = set;
+                    }
+                    catch { }
+                }
+                player.API.SetPropertyString("sid", "no");
+            }
+            else if (set != "-1")
             {
                 player.API.SetPropertyString("sid", set);
                 param[5] = set;
             }
             else if (gotextsub[Convert.ToInt16(param[1])-1] != null)
             {
-                //Снять комментирование при дебаге. Иначе что-то там крашится
                 
                 try
                 {
@@ -208,6 +219,17 @@ namespace MDirMediaPlayer
                     param[5] = "-1";
                 };
                 SubMenu.Items.Add(menuItem) ;
+            }
+            if (param[5] != "n") {
+                var menuItem = new MenuItem
+                {
+                    Header=$"Выключить субтитры"
+                };
+                menuItem.Click += (s, e) => {
+                    changeSub("n");
+                    param[5] = "n";
+                };
+                SubMenu.Items.Add(menuItem);
             }
             foreach (var track in correntAudio)
             {
