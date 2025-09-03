@@ -15,9 +15,13 @@
             <MenuItem Header="Аудио" x:Name="AudioMenu"/>
         </ContextMenu>
     </Window.Resources>
+
     <Grid ContextMenu="{StaticResource AuSubContextMenu}">
-        
-        <WindowsFormsHost>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <WindowsFormsHost Grid.Row="0">
             <windowsForms:Panel x:Name="PlayerHost" />
         </WindowsFormsHost>
     </Grid>

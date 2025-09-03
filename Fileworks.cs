@@ -59,5 +59,24 @@ namespace MDirMediaPlayer
         {
             return input.StartsWith(prefix) ? input.Substring(prefix.Length) : input;
         }
+        public static string FindFileWithNum(string dirpath, int num, string ext)
+        {
+            string filepath = "";
+            
+            return filepath;
+        }
+        public static bool IscontainFileWithExtention(string dir, string ext)
+        {
+            if (Directory.Exists(dir))
+            {
+                var files = Directory.GetFiles(dir);
+                if (files.Length > 0)
+                {
+                    return files[0].Split('.')[1] == ext;
+                }
+                return false;
+            }
+            else return false;
+        }
     }
 }

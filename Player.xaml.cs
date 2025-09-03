@@ -17,6 +17,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.IO;
+using System.Text.RegularExpressions;
 
 namespace MDirMediaPlayer
 {
@@ -28,18 +30,22 @@ namespace MDirMediaPlayer
         private MpvPlayer player;
         string[] param;
         string[] goturi;
+        string[] extfolders;
         string[] gotextsub;
+
         List<Tracks> correntSubs;
         List<Tracks> correntAudio;
         bool isFullScreen = false;
         bool isPlaying = true;
-        double duration = 0;
+        public double duration = 0;
+        public double currentpos = 0;
+
         public event EventHandler OnClose;
         bool dodisturb = false;
         ~ Player() {
             Console.WriteLine("I've destroyed");
         }
-        public Player(string[] pr, string[] uri, string[] extsubs)
+        public Player(string[] pr, string[] uri, string[] folders)
         {
             InitializeComponent();
             this.KeyDown += MainKeyDown;
@@ -49,7 +55,7 @@ namespace MDirMediaPlayer
             this.Top = 0;
             goturi = uri;
             param = pr;
-            gotextsub = extsubs;
+            extfolders = folders;
         }
         
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -62,7 +68,6 @@ namespace MDirMediaPlayer
             player.API.SetPropertyString("vo", "gpu");
             player.Load(goturi[Convert.ToInt16(param[1]) - 1]);
             player.Resume();
-
             PlayerHost.MouseUp += Click;
             player.API.FileLoaded += (Lsender, Largs) => {
                 duration = player.API.GetPropertyDouble("duration");
@@ -75,13 +80,15 @@ namespace MDirMediaPlayer
                 UpdateTracks();
             };
             Console.WriteLine(player.API.GetPropertyString("track-list"));
-            
+            Console.WriteLine(extfolders[0]);
             player.API.EndFile += (Esender, Eargs) =>
             {
                 if (Convert.ToInt32(param[1]) < goturi.Length) { changevid(1); }
                 else { player.Stop(); }
             };
+            gotextsub = new string[goturi.Length];
         }
+        
         private void JUSTCLOSE()
         {
             if (param[0] == "S")
@@ -142,35 +149,45 @@ namespace MDirMediaPlayer
         {
             if (set=="n")
             {
-                if (param[5] == "-1")
+                if (param[5] != "n")
                 {
-                    try
+                    if (Convert.ToInt16(param[5]) < 0)
                     {
-                        player.API.Command("sub-remove");
-                        param[5] = set;
+                        try
+                        {
+                            player.API.Command("sub-remove");
+                            param[5] = set;
+                        }
+                        catch { }
                     }
-                    catch { }
+
+                    player.API.SetPropertyString("sid", "no");
                 }
-                player.API.SetPropertyString("sid", "no");
             }
-            else if (set != "-1")
+            else if (Convert.ToInt16(set) > 0)
             {
                 player.API.SetPropertyString("sid", set);
                 param[5] = set;
             }
-            else if (gotextsub[Convert.ToInt16(param[1])-1] != null)
+            else if (Convert.ToInt16(set)*(-1) <= extfolders.Length)
             {
-                
-                try
-                {
-                    player.API.Command("sub-remove");
-                    
-                }
-                catch { }
-                
 
-                player.API.Command("sub-add", gotextsub[Convert.ToInt16(param[1]) - 1], "select");
-                Console.WriteLine(player.API.GetPropertyString("track-list"));
+                FoundLinkSubOrSound(extfolders[Convert.ToInt16(set) * (-1) - 1], gotextsub);
+
+                if (gotextsub[Convert.ToInt16(param[1]) - 1] != null)
+                {
+                    try
+                    {
+                        player.API.Command("sub-remove");
+
+                    }
+                    catch { }
+
+
+                    player.API.Command("sub-add", gotextsub[Convert.ToInt16(param[1]) - 1], "select");
+                    param[5] = set;
+                    Console.WriteLine(player.API.GetPropertyString("track-list"));
+                }
             }
             UpdateTracks();
         }
@@ -195,6 +212,7 @@ namespace MDirMediaPlayer
             if (AudioMenu != null) AudioMenu.Items.Clear();
             else AudioMenu = new MenuItem() { Header = "Аудио", Name = "AudioMenu" };
 
+            //перечисляет субтитры в составе контейнера
             foreach (var track in correntSubs)
             {
                 var menuItem = new MenuItem
@@ -204,20 +222,25 @@ namespace MDirMediaPlayer
                     IsChecked = track.selected
                 };
                 menuItem.Click += (s, e) => {
-                    var cItem = (MenuItem)s;
                     changeSub(menuItem.Tag.ToString());
                 };
                 SubMenu.Items.Add(menuItem);
             }
-            if (Fileworks.IsArrValid(gotextsub, Convert.ToInt32(param[1])-1) && param[5] != "-1") {
+            // перечисляет внешние субтитры
+            if (extfolders.Length>0) {
                 var menuItem = new MenuItem
                 {
                     Header = $"Внешние субтитры"
                 };
-                menuItem.Click += (s, e) => {
-                    changeSub("-1");
-                    param[5] = "-1";
-                };
+                int i = 1;
+                foreach (string subfol in extfolders) {
+                    var subitem = new MenuItem { Header = subfol.Split(Convert.ToChar(@"\")).Last(), Tag = i*(-1)};
+                    subitem.Click += (s, e) => {
+                        changeSub(subitem.Tag.ToString());
+                    };
+                    menuItem.Items.Add(subitem);
+                    i++;
+                }
                 SubMenu.Items.Add(menuItem) ;
             }
             if (param[5] != "n") {
@@ -258,6 +281,19 @@ namespace MDirMediaPlayer
             }
             catch { MessageBox.Show("трек-лист не загрузился!"); }
         }
+        public void FoundLinkSubOrSound(string dirpath, string[] links)
+        {
+            string rexp = @"(?<=^|\D)(\d{1,3})(?=\D|$|\s*\(\d+\))";
+            foreach (string sub in Directory.GetFiles(dirpath))
+            {
+                Match match = Regex.Match(sub, rexp);
+                if (match.Success)
+                {
+                    links[Convert.ToInt16(match.Groups[0].Value) - 1] = sub;
+                }
+            }
+        }
+
         public void Click(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             if (e.Button == System.Windows.Forms.MouseButtons.Right)

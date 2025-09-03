@@ -206,33 +206,32 @@ namespace MDirMediaPlayer
                     }).ToList();
                     // ищем папку с внешними субтитрами и вводим в массив с адресами субтитров проиндексированные субтитры
                     string rexpsub = @"(?i)sub";
-                    extsub = new string[countfiles];
+                    List<string> subpaths = new List<string>();
                     foreach (var folder in Directory.GetDirectories(path))
                     {
                         string num = Fileworks.RemovePrefix(folder.Split(Convert.ToChar(@"\")).Last(), sername);
                         {
                             Match match = Regex.Match(num, rexpsub);
                             
-                            if (match.Success) { 
-                                foreach (var file in Directory.GetFiles(folder))
+                            if (match.Success) {
+                                foreach (var subfold in Directory.GetDirectories(folder))
                                 {
-                                    string subnum = Fileworks.RemovePrefix(file.Split(Convert.ToChar(@"\")).Last(), sername);
-                                    Match matchsub = Regex.Match(subnum, rexp);
-                                    if (matchsub.Success)
+                                    if (Fileworks.IscontainFileWithExtention(subfold, "ass"))
                                     {
-                                        extsub[Convert.ToInt16(matchsub.Groups[0].Value)-1] = file;
+                                        subpaths.Add(subfold);
                                     }
                                 }
+                                if (Fileworks.IscontainFileWithExtention(folder, "ass"))
+                                {
+                                    subpaths.Add(folder);
+                                }
                             }
-                        }
-                        {
-                            Match match = Regex.Match(num, rexp);
-
-                            if (match.Success)
-                            {
-                                num = match.Groups[0].Value;
-                                filesrep.Add(new serial { pth = folder, name = num + " сезон", isFolder = true });
-                            };
+                            extsub = new string[subpaths.Count];
+                            int i = 0;
+                            foreach (string subpath in subpaths) {
+                                extsub[i] = subpath;
+                                i++;
+                            }
                         }
                     }
                     return true;
