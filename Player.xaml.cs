@@ -107,7 +107,6 @@ namespace MDirMediaPlayer
                     {
                         newparams = newparams + pt;
                     }
-
                     else
                     {
                         newparams = newparams + "&" + pt;
@@ -183,7 +182,6 @@ namespace MDirMediaPlayer
                     }
                     catch { }
 
-
                     player.API.Command("sub-add", gotextsub[Convert.ToInt16(param[1]) - 1], "select");
                     param[5] = set;
                     Console.WriteLine(player.API.GetPropertyString("track-list"));
@@ -241,7 +239,7 @@ namespace MDirMediaPlayer
                     menuItem.Items.Add(subitem);
                     i++;
                 }
-                SubMenu.Items.Add(menuItem) ;
+                SubMenu.Items.Add(menuItem);
             }
             if (param[5] != "n") {
                 var menuItem = new MenuItem
@@ -254,6 +252,7 @@ namespace MDirMediaPlayer
                 };
                 SubMenu.Items.Add(menuItem);
             }
+            // перечисляет аудиотреки в составе контейнера
             foreach (var track in correntAudio)
             {
                 var menuItem = new MenuItem
@@ -283,12 +282,13 @@ namespace MDirMediaPlayer
         }
         public void FoundLinkSubOrSound(string dirpath, string[] links)
         {
-            string rexp = @"(?<=^|\D)(\d{1,3})(?=\D|$|\s*\(\d+\))";
+            string rexp = @"\b\d{1,3}\b";
             foreach (string sub in Directory.GetFiles(dirpath))
             {
                 Match match = Regex.Match(sub, rexp);
                 if (match.Success)
                 {
+                    Console.WriteLine(match.Groups[0].Value);
                     links[Convert.ToInt16(match.Groups[0].Value) - 1] = sub;
                 }
             }
