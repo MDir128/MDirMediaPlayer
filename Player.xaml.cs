@@ -80,7 +80,7 @@ namespace MDirMediaPlayer
                 UpdateTracks();
             };
             Console.WriteLine(player.API.GetPropertyString("track-list"));
-            Console.WriteLine(extfolders[0]);
+            Console.WriteLine(extfolders);
             player.API.EndFile += (Esender, Eargs) =>
             {
                 if (Convert.ToInt32(param[1]) < goturi.Length) { changevid(1); }
@@ -282,7 +282,7 @@ namespace MDirMediaPlayer
         }
         public void FoundLinkSubOrSound(string dirpath, string[] links)
         {
-            string rexp = @"\b\d{1,3}\b";
+            string rexp = @"(?<!-)\b\d{1,3}\b";
             foreach (string sub in Directory.GetFiles(dirpath))
             {
                 Match match = Regex.Match(sub, rexp);

@@ -72,7 +72,7 @@ namespace MDirMediaPlayer
                 var files = Directory.GetFiles(dir);
                 if (files.Length > 0)
                 {
-                    return files[0].Split('.')[1] == ext;
+                    return files[0].Split('.').Last() == ext;
                 }
                 return false;
             }
