@@ -55,9 +55,23 @@ namespace MDirMediaPlayer
             else if (array[corrent] == null) return false;
             else return true;
         }
-        public static string RemovePrefix(string input, string prefix)
+        public static string RemovePrefix(string input, string nor)
         {
-            return input.StartsWith(prefix) ? input.Substring(prefix.Length) : input;
+            //return input.StartsWith(prefix) ? input.Substring(prefix.Length) : input;
+            string[] splited_input = input.Split(' ');
+            string[] splited_nor = nor.Split(' ');
+            string output = "";
+            int j = 0;
+            for (int i = 0; i < splited_nor.Length; i++) {
+                if (splited_nor[i] != splited_input[j])
+                {
+                    output += splited_input[j];
+                    i--;
+                }
+                j++;
+                if (j == splited_input.Length) break;
+            }
+            return output;
         }
         public static string FindFileWithNum(string dirpath, int num, string ext)
         {
@@ -77,6 +91,17 @@ namespace MDirMediaPlayer
                 return false;
             }
             else return false;
+        }
+        public static int GetDifInteger(int[] nums, int[] nums2)
+        {
+            int got = 0;
+            for (int i = 0; i <= nums.Length; i++) {
+                if (nums[i] != nums2[i])
+                {
+                    got = i; break;
+                }
+            }
+            return got;
         }
     }
 }
