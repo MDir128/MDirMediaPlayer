@@ -180,30 +180,37 @@ namespace MDirMediaPlayer
                     countfiles = 0;
                     filesrep = new List<serial>();
                     string[] ext = { ".mp4", ".mkv" };
-                    string rexp = @"(?<=^|\D)(\d{1,3})(?=\D|$|\s*\(\d+\))";
+                    //string rexp = @"(?<=^|\D)(\d{1,3})(?=\D|$|\s*\(\d+\))";
                     string sername = path.Split(Convert.ToChar(@"\")).Last();
-
+                    List<string> filetemplist = new List<string>();
                     foreach (var file in Directory.GetFiles(path))
                     {
-                        
-                        string num = Fileworks.RemovePrefix(file.Split(Convert.ToChar(@"\")).Last(), sername);
-                        if (ext.Contains(System.IO.Path.GetExtension(file)))
-                        {
-                            Match match = Regex.Match(num, rexp);
-                            if (match.Success)
-                            {
-                                num = match.Groups[0].Value;
-                            }
-                            filesrep.Add(new serial { pth = file, name = num+ " Серия", isFolder = false });
-                            countfiles++;
-                        }
+                        filetemplist.Add(Convert.ToString(file));
+                        //string num = Fileworks.RemovePrefix(file.Split(Convert.ToChar(@"\")).Last(), sername);
+                        //if (ext.Contains(System.IO.Path.GetExtension(file)))
+                        //{
+                        //    Match match = Regex.Match(num, rexp);
+                        //    if (match.Success)
+                        //    {
+                        //        num = match.Groups[0].Value;
+                        //    }
+                        //    filesrep.Add(new serial { pth = file, name = num+ " Серия", isFolder = false });
+                        //    countfiles++;
+                        //}
                     }
-                    filesrep = filesrep.OrderBy(f =>
+                    string[] filetemparr = Fileworks.SortSer(filetemplist.ToArray());
+                    for (int i = 0; i < filetemparr.Length; i++)
                     {
-                        string str = f.name.ToString();
-                        string numPart = str.Split(' ')[0];
-                        return int.TryParse(numPart, out int num) ? num : int.MaxValue;
-                    }).ToList();
+                        filesrep.Add(new serial { pth = filetemparr[i], name = i+1+" Серия", isFolder = false});
+                        countfiles++;
+                    }
+                    //filesrep = filesrep.OrderBy(f =>
+                    //{
+                    //    string str = f.name.ToString();
+                    //    string numPart = str.Split(' ')[0];
+                    //    return int.TryParse(numPart, out int num) ? num : int.MaxValue;
+                    //}).ToList();
+
                     // ищем папку с внешними субтитрами и вводим в массив с адресами субтитров проиндексированные субтитры
                     string rexpsub = @"(?i)sub";
                     List<string> subpaths = new List<string>();

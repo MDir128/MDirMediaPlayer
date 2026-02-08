@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Documents;
+using System.Windows.Forms.VisualStyles;
 
 namespace MDirMediaPlayer
 {
@@ -58,14 +61,14 @@ namespace MDirMediaPlayer
         public static string RemovePrefix(string input, string nor)
         {
             //return input.StartsWith(prefix) ? input.Substring(prefix.Length) : input;
-            string[] splited_input = input.Split(' ');
+            string[] splited_input = input.Split(' ', '(', ')', '-');
             string[] splited_nor = nor.Split(' ');
             string output = "";
             int j = 0;
             for (int i = 0; i < splited_nor.Length; i++) {
                 if (splited_nor[i] != splited_input[j])
                 {
-                    output += splited_input[j];
+                    output += splited_input[j] + ' ';
                     i--;
                 }
                 j++;
@@ -102,6 +105,21 @@ namespace MDirMediaPlayer
                 }
             }
             return got;
+        }
+        public static string[] SortSer(string[] arr) {
+            string[] output = new string[arr.Length];
+
+            int[][] filenumes = arr.Select(s => Regex.Matches(s.Split(Convert.ToChar(@"\")).Last(), @"\d+").Cast<Match>().
+            Select(m => int.Parse(m.Value)).ToArray()).ToArray();
+
+            int diffint = GetDifInteger(filenumes[0], filenumes[1]);
+
+            for (int i = 0; i<arr.Length; i++)
+            {
+                output[i] = arr[filenumes[i][diffint]-1];
+            }
+
+            return output;
         }
     }
 }
